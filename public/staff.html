@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" data-title-template="My Attendance — {company}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Attendance — Attendance System</title>
+<link rel="icon" href="/img/logo.png" id="favicon-link">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="sidebar-scrim" id="scrim" onclick="toggleSidebar(false)"></div>
+
+<div class="app-shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="seal"><img src="/img/logo.png" alt="Company logo" class="js-brand-logo"></div>
+      <div>
+        <div class="brand-name js-brand-name">Your Company</div>
+        <div class="brand-sub">STAFF PORTAL</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" data-view="report" onclick="showView('report')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      Monthly Report
+    </div>
+    <div class="nav-item" data-view="requests" onclick="showView('requests')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+      Early Checkouts
+    </div>
+    <div class="nav-item" data-view="leave" onclick="showView('leave')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Leave Requests
+    </div>
+    <div class="nav-item" data-view="corrections" onclick="showView('corrections')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Fix Attendance
+    </div>
+    <div class="nav-item hidden" id="nav-team" data-view="team" onclick="showView('team')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Team Approvals
+      <span class="nav-badge hidden" id="team-badge">0</span>
+    </div>
+    <div class="nav-item" data-view="profile" onclick="showView('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+      My Profile
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar" id="sb-avatar" style="background:#2E4A93">--</div>
+      <div class="who">
+        <div class="name" id="sb-name">Loading…</div>
+        <div class="role" id="sb-role">—</div>
+      </div>
+      <div class="icon-btn" title="Sign out" onclick="signOut()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="flex center gap-12">
+        <div class="icon-btn menu-btn" onclick="toggleSidebar(true)" style="color:var(--navy-700);border-color:var(--line)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </div>
+        <div>
+          <h1 id="page-title">Dashboard</h1>
+          <div class="meta" id="page-sub">—</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===================== DASHBOARD VIEW ===================== -->
+      <section id="view-dashboard">
+        <div class="card card-pad hidden" id="attention-card" style="margin-bottom:20px; border-left:4px solid var(--brass);">
+          <div class="section-head" style="margin-bottom:0;">
+            <div class="flex center gap-12">
+              <div class="ic" style="background:var(--brass-tint); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brass)" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size:15px;">Needs your attention</h3>
+                <div class="sub" id="attention-text">—</div>
+              </div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="reviewTeamRequests()">Review now</button>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div>
+            <div class="grid grid-stats" style="margin-bottom:20px;">
+              <div class="card stat-card">
+                <div class="ic" style="background:var(--success-tint)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <div class="num" id="kpi-present">—</div>
+                <div class="lbl">Present days this month</div>
+              </div>
+              <div class="card stat-card">
+                <div class="ic" style="background:var(--late-tint)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--late)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                </div>
+                <div class="num" id="kpi-late">—</div>
+                <div class="lbl">Late arrivals this month</div>
+              </div>
+              <div class="card stat-card">
+                <div class="ic" style="background:var(--info-tint)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+                </div>
+                <div class="num" id="kpi-hours">—</div>
+                <div class="lbl">Avg. hours per day</div>
+              </div>
+              <div class="card stat-card">
+                <div class="ic" style="background:var(--brass-tint)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brass)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 12.5l2 2 3.5-4"/></svg>
+                </div>
+                <div class="num" id="kpi-rate">—</div>
+                <div class="lbl">Attendance rate</div>
+              </div>
+            </div>
+
+            <div class="card card-pad">
+              <div class="section-head">
+                <div>
+                  <h3>Last 10 working days</h3>
+                  <div class="sub">Your check-in and check-out timeline</div>
+                </div>
+                <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadRecent)"></button>
+              </div>
+              <div class="table-wrap">
+                <table id="recent-table">
+                  <thead><tr><th class="sortable" onclick="sortTable('recent-table',0)">Miti <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('recent-table',1)">Date (AD) <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('recent-table',2)">Check In <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('recent-table',3)">Check Out <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('recent-table',4)">Hours <span class="sort-ind"></span></th><th>Modality</th><th class="sortable" onclick="sortTable('recent-table',6)">Status <span class="sort-ind"></span></th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Signature Dial -->
+          <div class="dial-card">
+            <div class="dial-top">
+              <div>
+                <div class="dial-clock" id="live-clock">--:--:--</div>
+                <div class="dial-date" id="live-date">—</div>
+              </div>
+              <div class="seal" style="width:38px;height:38px;padding:5px;"><img src="/img/logo.png" alt="Company logo" class="js-brand-logo"></div>
+            </div>
+            <div class="dial-wrap">
+              <div class="dial">
+                <div class="dial-inner">
+                  <div class="time" id="dial-status-time">--:--</div>
+                  <div class="status-lbl" id="dial-status-label">Not checked in</div>
+                </div>
+              </div>
+              <div class="dial-actions">
+                <button class="btn btn-gold" id="btn-checkin" onclick="checkIn()">Check In</button>
+                <button class="btn btn-ghost" id="btn-checkout" style="border-color:rgba(255,255,255,.25); color:#fff;" onclick="checkOut()" disabled>Check Out</button>
+              </div>
+              <div class="dial-foot" id="shift-note">Shift 09:00 — 18:00</div>
+              <div class="dial-geo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.6 7-12a7 7 0 1 0-14 0c0 5.4 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>
+                Your location and IP are recorded with each check-in
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== MONTHLY REPORT VIEW ===================== -->
+      <section id="view-report" class="hidden">
+        <div class="section-head">
+          <div>
+            <h3 id="report-month-label" style="font-size:18px;">—</h3>
+            <div class="sub">Your evaluated performance for the Miti (BS) month selected</div>
+          </div>
+          <div class="flex gap-8" style="flex-wrap:wrap; align-items:center;">
+            <select id="report-staff-select" class="select hidden"><option value="">My report</option></select>
+            <select id="report-bs-month" class="select" aria-label="BS month"></select>
+            <select id="report-bs-year" class="select" aria-label="BS year"></select>
+            <button class="btn btn-ghost btn-sm" onclick="exportMyReport('excel')">⬇ Excel</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportMyReport('pdf')">⬇ PDF</button>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadReport)"></button>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom:20px;">
+          <div class="card card-pad flex center gap-16">
+            <div class="ring-wrap">
+              <svg width="104" height="104" viewBox="0 0 104 104">
+                <circle cx="52" cy="52" r="44" stroke="var(--line)" stroke-width="10" fill="none"/>
+                <circle id="ring-attendance" cx="52" cy="52" r="44" stroke="var(--success)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="276.4" stroke-dashoffset="276.4"/>
+              </svg>
+              <div class="ring-label"><div class="pct" id="ring-attendance-pct">0%</div><div class="tag">Attendance</div></div>
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:14px;">Attendance Rate</div>
+              <div class="muted" style="font-size:12.5px; margin-top:4px;">Share of working days marked present this month, including late arrivals.</div>
+            </div>
+          </div>
+          <div class="card card-pad flex center gap-16">
+            <div class="ring-wrap">
+              <svg width="104" height="104" viewBox="0 0 104 104">
+                <circle cx="52" cy="52" r="44" stroke="var(--line)" stroke-width="10" fill="none"/>
+                <circle id="ring-punctuality" cx="52" cy="52" r="44" stroke="var(--brass)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="276.4" stroke-dashoffset="276.4"/>
+              </svg>
+              <div class="ring-label"><div class="pct" id="ring-punctuality-pct">0%</div><div class="tag">On Time</div></div>
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:14px;">Punctuality Rate</div>
+              <div class="muted" style="font-size:12.5px; margin-top:4px;">Of days you attended, the share you arrived within grace period.</div>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <div class="info-list">
+              <div class="info-row"><span class="k">Working days</span><span class="v" id="rep-working">—</span></div>
+              <div class="info-row"><span class="k">On approved leave</span><span class="v" id="rep-onleave">—</span></div>
+              <div class="info-row"><span class="k">Absences</span><span class="v" id="rep-absent">—</span></div>
+              <div class="info-row"><span class="k">Total hours logged</span><span class="v" id="rep-hours">—</span></div>
+              <div class="info-row"><span class="k">Early checkouts</span><span class="v" id="rep-early">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card card-pad">
+            <div class="section-head"><h3>Daily hours logged</h3></div>
+            <canvas id="chart-hours" height="190"></canvas>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>Attendance mix</h3></div>
+            <canvas id="chart-mix" height="190"></canvas>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-top:20px;">
+          <div class="section-head"><h3>Daily log</h3></div>
+          <div class="table-wrap">
+            <table id="report-table">
+              <thead><tr><th class="sortable" onclick="sortTable('report-table',0)">Miti <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('report-table',1)">Date (AD) <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('report-table',2)">Check In <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('report-table',3)">Check Out <span class="sort-ind"></span></th><th class="sortable" onclick="sortTable('report-table',4)">Hours <span class="sort-ind"></span></th><th>Modality</th><th class="sortable" onclick="sortTable('report-table',6)">Status <span class="sort-ind"></span></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== REQUESTS VIEW ===================== -->
+      <section id="view-requests" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div>
+              <h3>Early checkout requests</h3>
+              <div class="sub">Every early departure is logged here with HR's decision</div>
+            </div>
+          </div>
+          <div class="flex gap-8" style="flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;">
+            <div class="field" style="margin:0;"><label>From (Miti)</label>
+              <div class="flex gap-8"><select id="early-from-month" class="select"></select><select id="early-from-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>To (Miti)</label>
+              <div class="flex gap-8"><select id="early-to-month" class="select"></select><select id="early-to-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>Status</label><select id="early-status" class="select">
+              <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+            </select></div>
+            <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, loadEarly)">Apply filters</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearEarlyFilter()">Clear dates</button>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadEarly)"></button>
+          </div>
+          <div class="table-wrap">
+            <table id="requests-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortTable('requests-table',0)">Date <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('requests-table',1)">Departed <span class="sort-ind"></span></th>
+                <th>Reason</th>
+                <th class="sortable" onclick="sortTable('requests-table',3)">Manager <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('requests-table',4)">HR <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('requests-table',5)">Status <span class="sort-ind"></span></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== LEAVE REQUESTS VIEW ===================== -->
+      <section id="view-leave" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div>
+              <h3>Leave requests</h3>
+              <div class="sub">Needs your manager's approval and HR's approval before it's confirmed</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openLeaveModal()">Request leave</button>
+          </div>
+          <div class="flex gap-8" style="flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;">
+            <div class="field" style="margin:0;"><label>From (Miti)</label>
+              <div class="flex gap-8"><select id="leave-from-month" class="select"></select><select id="leave-from-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>To (Miti)</label>
+              <div class="flex gap-8"><select id="leave-to-month" class="select"></select><select id="leave-to-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>Status</label><select id="leave-status" class="select">
+              <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+            </select></div>
+            <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, loadLeave)">Apply filters</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearLeaveFilter()">Clear dates</button>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadLeave)"></button>
+          </div>
+          <div class="table-wrap">
+            <table id="leave-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortTable('leave-table',0)">Type <span class="sort-ind"></span></th>
+                <th>Miti (From – To)</th>
+                <th class="sortable" onclick="sortTable('leave-table',2)">From (AD) <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('leave-table',3)">To (AD) <span class="sort-ind"></span></th>
+                <th>Reason</th>
+                <th class="sortable" onclick="sortTable('leave-table',5)">Manager <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('leave-table',6)">HR <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('leave-table',7)">Status <span class="sort-ind"></span></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== CORRECTION REQUESTS VIEW ===================== -->
+      <section id="view-corrections" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div>
+              <h3>Fix a missed check-in or check-out</h3>
+              <div class="sub">For a past day you forgot to clock — needs your manager's and HR's approval before it appears on your record</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openCorrectionModal()">Request a fix</button>
+          </div>
+          <div class="flex gap-8" style="flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;">
+            <div class="field" style="margin:0;"><label>From (Miti)</label>
+              <div class="flex gap-8"><select id="cor-from-month" class="select"></select><select id="cor-from-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>To (Miti)</label>
+              <div class="flex gap-8"><select id="cor-to-month" class="select"></select><select id="cor-to-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>Status</label><select id="cor-status" class="select">
+              <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+            </select></div>
+            <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, loadCorrections)">Apply filters</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearCorrectionsFilter()">Clear dates</button>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadCorrections)"></button>
+          </div>
+          <div class="table-wrap">
+            <table id="corrections-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortTable('corrections-table',0)">Miti <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('corrections-table',1)">Date (AD) <span class="sort-ind"></span></th>
+                <th>Requested In</th>
+                <th>Requested Out</th>
+                <th>Reason</th>
+                <th class="sortable" onclick="sortTable('corrections-table',5)">Manager <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('corrections-table',6)">HR <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('corrections-table',7)">Status <span class="sort-ind"></span></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== TEAM APPROVALS VIEW (managers only) ===================== -->
+      <section id="view-team" class="hidden">
+        <div class="tab-row">
+          <div class="tab active" id="team-tab-early" onclick="switchTeamTab('early')">Early Checkouts</div>
+          <div class="tab" id="team-tab-leave" onclick="switchTeamTab('leave')">Leave Requests</div>
+          <div class="tab" id="team-tab-correction" onclick="switchTeamTab('correction')">Fix Requests</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head">
+            <div>
+              <h3 id="team-title">Early checkout requests from your team</h3>
+              <div class="sub">Your decision plus HR's decision are both required before a request is approved</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="team-table">
+              <thead id="team-thead"><tr>
+                <th class="sortable" onclick="sortTable('team-table',0)">Employee <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('team-table',1)">Date <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('team-table',2)">Departed <span class="sort-ind"></span></th>
+                <th>Reason</th>
+                <th class="sortable" onclick="sortTable('team-table',4)">HR decision <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('team-table',5)">Your decision <span class="sort-ind"></span></th>
+                <th>Action</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PROFILE VIEW ===================== -->
+      <section id="view-profile" class="hidden">
+        <div class="grid grid-2">
+          <div class="card card-pad">
+            <div class="flex center gap-16" style="margin-bottom:22px;">
+              <div class="avatar" id="profile-avatar" style="width:62px;height:62px;font-size:20px; flex-shrink:0;">--</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:700; font-size:17px;" id="profile-name">—</div>
+                <div class="muted" style="font-size:13px;" id="profile-role">—</div>
+                <div class="flex gap-8" style="margin-top:9px;">
+                  <input type="file" id="avatar-file-input" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="onAvatarFileChosen(this)">
+                  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-file-input').click()">Change photo</button>
+                  <button class="btn btn-ghost btn-sm" id="remove-photo-btn" onclick="removeMyAvatar()">Remove photo</button>
+                </div>
+              </div>
+            </div>
+            <div class="info-list">
+              <div class="info-row"><span class="k">Employee ID</span><span class="v mono" id="p-empid">—</span></div>
+              <div class="info-row"><span class="k">Department</span><span class="v" id="p-dept">—</span></div>
+              <div class="info-row"><span class="k">Email</span><span class="v" id="p-email">—</span></div>
+              <div class="info-row"><span class="k">Phone</span><span class="v" id="p-phone">—</span></div>
+              <div class="info-row"><span class="k">Date joined</span><span class="v" id="p-join">—</span></div>
+              <div class="info-row"><span class="k">Shift</span><span class="v" id="p-shift">—</span></div>
+              <div class="info-row"><span class="k">Reports to</span><span class="v" id="p-manager">—</span></div>
+              <div class="info-row"><span class="k">Status</span><span class="v" id="p-status">—</span></div>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>About this portal</h3></div>
+            <p class="muted" style="font-size:13.5px; line-height:1.7;">
+              Use the dial on your dashboard to check in each morning and check out at the end of your shift.
+              If you need to leave before <span id="p-shift-end">18:00</span>, the system will ask for a brief reason —
+              this is sent straight to the HR office for approval, and you can track its status under
+              <b>Early Checkouts</b> at any time.
+            </p>
+            <p class="muted" style="font-size:13.5px; line-height:1.7; margin-top:12px;">
+              Each check-in and check-out records your approximate location and area (if you allow the browser prompt)
+              and the IP address of the device you used, so HR has an accurate picture of where and how the team is working.
+            </p>
+            <p class="muted" style="font-size:13.5px; line-height:1.7; margin-top:12px;">
+              The work week runs <b class="js-workweek-label">Sunday to Friday</b>, with the rest as weekly off. Your
+              <b>Monthly Report</b> updates automatically as you check in and out.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:20px;">
+          <div class="card card-pad">
+            <div class="section-head"><h3>Change password</h3><div class="sub">Choose something you haven't used elsewhere</div></div>
+            <div class="field"><label>Current password</label><input type="password" id="pw-current" placeholder="••••••••"></div>
+            <div class="field"><label>New password</label><input type="password" id="pw-new" placeholder="At least 8 characters"></div>
+            <div class="field"><label>Confirm new password</label><input type="password" id="pw-confirm" placeholder="Re-enter new password"></div>
+            <button class="btn btn-primary btn-sm btn-block" onclick="changeMyPassword()">Update password</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="app-footer">
+      <span id="footer-copyright">© <span id="footer-year">2026</span> Your Company</span>
+      <span class="powered-by">Powered by <strong>KutkiTech</strong></span>
+    </footer>
+  </div>
+</div>
+
+<!-- Early checkout modal -->
+<div class="modal-backdrop hidden" id="early-modal">
+  <div class="modal">
+    <h3>Leaving early?</h3>
+    <p class="sub" id="early-modal-sub">Your shift hasn't ended yet — let HR know why so they can review and approve it.</p>
+    <div class="field">
+      <label>Reason for early checkout</label>
+      <textarea id="early-reason" placeholder="e.g. Medical appointment, family emergency…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEarlyModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="submitEarlyCheckout()">Submit & Check Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leave request modal -->
+<div class="modal-backdrop hidden" id="leave-modal">
+  <div class="modal">
+    <h3>Request leave</h3>
+    <p class="sub">Your manager and HR will both need to approve this before it's confirmed.</p>
+    <div class="field">
+      <label>Leave type</label>
+      <select id="leave-type" onchange="updateLeaveBalanceHint()">
+        <option>Casual Leave</option>
+        <option>Sick Leave</option>
+        <option>Annual Leave</option>
+        <option>Unpaid Leave</option>
+        <option>Other</option>
+      </select>
+      <p class="sub" id="leave-balance-hint" style="margin-top:6px;"></p>
+    </div>
+    <div class="flex gap-12" style="flex-wrap:wrap;">
+      <div class="field" style="flex:1 1 130px;"><label>From</label><input type="date" id="leave-from"></div>
+      <div class="field" style="flex:1 1 130px;"><label>To</label><input type="date" id="leave-to"></div>
+    </div>
+    <div class="field"><label>Reason</label><textarea id="leave-reason" placeholder="Brief reason for your leave…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeLeaveModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="submitLeaveRequest()">Submit request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Correction request modal -->
+<div class="modal-backdrop hidden" id="correction-modal">
+  <div class="modal">
+    <h3>Request a fix</h3>
+    <p class="sub">For a day you forgot to check in or out. Your manager and HR will both need to approve before it's applied.</p>
+    <div class="field"><label>Date</label><input type="date" id="cor-date"></div>
+    <div class="flex gap-12" style="flex-wrap:wrap;">
+      <div class="field" style="flex:1 1 150px;"><label>Check-in time (optional)</label><input type="time" id="cor-checkin"></div>
+      <div class="field" style="flex:1 1 150px;"><label>Check-out time (optional)</label><input type="time" id="cor-checkout"></div>
+    </div>
+    <div class="field"><label>Reason</label><textarea id="cor-reason" placeholder="e.g. Forgot to check in when I arrived…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCorrectionModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="submitCorrectionRequest()">Submit request</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+
+<script src="/js/common.js"></script>
+<script src="/js/staff.js"></script>
+</body>
+</html>

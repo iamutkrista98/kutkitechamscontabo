@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-title-template="{company} — Attendance">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance System — Sign In</title>
+<link rel="icon" href="/img/logo.png" id="favicon-link">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="auth-screen">
+  <aside class="auth-aside">
+    <div class="brand-row">
+      <div class="seal"><img src="/img/logo.png" alt="Company logo" class="js-brand-logo"></div>
+      <div>
+        <div class="brand-name js-brand-name">Your Company</div>
+        <div class="brand-sub">Attendance Portal</div>
+      </div>
+    </div>
+
+    <div class="aside-hero">
+      <div class="aside-eyebrow">HR Administration</div>
+      <h1>Oversee attendance, approvals, and reporting for the whole team.</h1>
+      <p>Sign in to review punctuality, live location, device IP, leave balances, and approve requests across the organization's distributed, always-on team.</p>
+    </div>
+
+    <div class="aside-stats">
+      <div class="aside-stat">
+        <div class="num" id="stat-staff">—</div>
+        <div class="lbl">Staff on roll</div>
+      </div>
+      <div class="aside-stat">
+        <div class="num" id="stat-departments">—</div>
+        <div class="lbl">Departments</div>
+      </div>
+      <div class="aside-stat">
+        <div class="num js-workweek-label">Sun–Fri</div>
+        <div class="lbl">Work week</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <div class="auth-card-mobile-brand">
+        <div class="seal"><img src="/img/logo.png" alt="Company logo" class="js-brand-logo"></div>
+        <div>
+          <div class="brand-name js-brand-name">Your Company</div>
+          <div class="brand-sub">Attendance Portal</div>
+        </div>
+      </div>
+
+      <div id="panel-admin" class="auth-card-panel">
+        <div class="auth-icon-badge gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.5 12.5 8-8M16 6l2 2M19 3l2 2"/></svg>
+        </div>
+        <h2>HR Administrator</h2>
+        <p class="sub">Sign in to manage attendance, approvals and reports.</p>
+        <div class="auth-error" id="err-admin"></div>
+        <form onsubmit="return doLogin(event,'admin')">
+          <div class="field">
+            <label>HR email</label>
+            <div class="field-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              <input type="email" id="admin-email" placeholder="hr@company.com" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <div class="field-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              <input type="password" id="admin-password" placeholder="••••••••" required>
+              <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('admin-password', this)" tabindex="-1" aria-label="Show password">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-gold btn-block" type="submit">Sign in as HR Admin</button>
+        </form>
+        <div style="text-align:center; margin-top:14px;">
+          <a href="javascript:void(0)" onclick="openForgotModal()" style="font-size:12.5px; color:var(--muted-2);">Forgot password?</a>
+        </div>
+      </div>
+
+      <div class="auth-foot"><span class="js-brand-name">Your Company</span> · HR administration portal</div>
+    </div>
+  </main>
+</div>
+
+<footer class="app-footer" style="border-top:none; padding:16px 32px 24px;">
+  <span id="footer-copyright">© <span id="footer-year"></span> Your Company</span>
+  <span class="powered-by">Powered by <strong>KutkiTech</strong></span>
+</footer>
+
+<!-- Forgot password -->
+<div class="modal-backdrop hidden" id="forgot-modal">
+  <div class="modal">
+    <div id="forgot-step-choose">
+      <h3>Forgot password?</h3>
+      <p class="sub">Choose how you'd like to reset it.</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-ghost" onclick="showForgotStep('hr')">Ask HR/Admin to assign a new password</button>
+        <button class="btn btn-ghost" onclick="showForgotStep('otp-request')">Reset it myself with an email code</button>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" onclick="closeForgotModal()">Cancel</button></div>
+    </div>
+
+    <div id="forgot-step-hr" class="hidden">
+      <h3>Request a password reset</h3>
+      <p class="sub">HR will see your request on their dashboard and email you a new password.</p>
+      <div class="field"><label>Registered email</label><input type="email" id="forgot-hr-email" placeholder="you@company.com"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="showForgotStep('choose')">Back</button>
+        <button class="btn btn-primary" onclick="submitForgotHr()">Send request</button>
+      </div>
+    </div>
+
+    <div id="forgot-step-otp-request" class="hidden">
+      <h3>Reset with an email code</h3>
+      <p class="sub">We'll send a 6-digit code to your registered email.</p>
+      <div class="field"><label>Registered email</label><input type="email" id="forgot-otp-email" placeholder="you@company.com"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="showForgotStep('choose')">Back</button>
+        <button class="btn btn-primary" onclick="submitForgotSendOtp()">Send code</button>
+      </div>
+    </div>
+
+    <div id="forgot-step-otp-verify" class="hidden">
+      <h3>Enter code &amp; new password</h3>
+      <p class="sub">Check your inbox for the 6-digit code &mdash; it expires in 10 minutes.</p>
+      <input type="hidden" id="forgot-otp-email-hidden">
+      <div class="auth-error" id="forgot-msg"></div>
+      <div class="field"><label>6-digit code</label><input type="text" maxlength="6" id="forgot-otp-code" placeholder="123456"></div>
+      <div class="field"><label>New password</label><input type="password" id="forgot-otp-new-password" placeholder="At least 8 characters"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="showForgotStep('otp-request')">Back</button>
+        <button class="btn btn-primary" onclick="submitForgotVerifyOtp()">Reset password</button>
+      </div>
+    </div>
+
+    <div id="forgot-step-done" class="hidden">
+      <h3>Done</h3>
+      <p class="sub" id="forgot-done-text"></p>
+      <div class="modal-actions"><button class="btn btn-primary" onclick="closeForgotModal()">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+
+<script src="/js/common.js"></script>
+<script>
+async function doLogin(e, role){
+  e.preventDefault();
+  const errBox = document.getElementById('err-' + role);
+  errBox.classList.remove('show');
+  const email = document.getElementById(role + '-email').value;
+  const password = document.getElementById(role + '-password').value;
+  try{
+    const res = await fetch(`/api/auth/${role === 'admin' ? 'admin' : 'staff'}/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Sign-in failed.'); }
+    window.location.href = role === 'admin' ? '/admin.html' : '/staff.html';
+  }catch(err){
+    errBox.textContent = err.message;
+    errBox.classList.add('show');
+  }
+  return false;
+}
+
+// If already signed in, jump straight to the dashboard.
+(async function(){
+  try{
+    const a = await fetch('/api/auth/admin/me');
+    if(a.ok){ window.location.href = '/admin.html'; return; }
+  }catch(e){}
+})();
+
+// Pull the exact current staff/department counts for the sign-in screen.
+(async function(){
+  try{
+    const res = await fetch('/api/public/stats');
+    if(!res.ok) return;
+    const data = await res.json();
+    document.getElementById('stat-staff').textContent = data.activeStaff;
+    document.getElementById('stat-departments').textContent = data.departments;
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

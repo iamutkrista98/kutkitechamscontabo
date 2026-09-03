@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en" data-title-template="HR Admin — {company}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Admin — Attendance System</title>
+<link rel="icon" href="/img/logo.png" id="favicon-link">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="sidebar-scrim" id="scrim" onclick="toggleSidebar(false)"></div>
+
+<div class="app-shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="seal"><img src="/img/logo.png" alt="Company logo" class="js-brand-logo"></div>
+      <div>
+        <div class="brand-name js-brand-name">Your Company</div>
+        <div class="brand-sub">HR ADMIN</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-view="overview" onclick="showView('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" data-view="today" onclick="showView('today')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Today's Attendance
+    </div>
+    <div class="nav-item" data-view="requests" onclick="showView('requests')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V6a2 2 0 0 1 2-2h8l6 6v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 4v6h6"/></svg>
+      Approvals
+      <span class="nav-badge hidden" id="req-badge">0</span>
+    </div>
+
+    <div class="nav-section-label">Staff</div>
+    <div class="nav-item" data-view="directory" onclick="showView('directory')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-4 3.5-6 6.5-6s5.5 2 6.5 6"/><circle cx="18" cy="9" r="2.6"/><path d="M16 14.2c2.3.3 3.9 2 4.6 5.3"/></svg>
+      Staff Directory
+    </div>
+    <div class="nav-item" data-view="log" onclick="showView('log')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      Attendance Log
+    </div>
+    <div class="nav-item" data-view="holidays" onclick="showView('holidays')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+      Holidays
+    </div>
+    <div class="nav-item" data-view="device" onclick="showView('device')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8.5 16c.7-1.6 2-2.4 3.5-2.4s2.8.8 3.5 2.4"/><path d="M9 21h6"/></svg>
+      Biometric Device
+    </div>
+
+    <div class="nav-section-label">Account</div>
+    <div class="nav-item" data-view="company" onclick="showView('company')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V7l7-4 7 4v14"/><path d="M13 21V11H7v10"/><path d="M17 21V11"/></svg>
+      Company
+    </div>
+    <div class="nav-item" data-view="account" onclick="showView('account')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+      My Account
+      <span class="nav-badge hidden" id="pwreq-badge">0</span>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar" id="sb-avatar" style="background:#5FA82E">--</div>
+      <div class="who">
+        <div class="name" id="sb-name">Loading…</div>
+        <div class="role" id="sb-role">—</div>
+      </div>
+      <div class="icon-btn" title="Sign out" onclick="signOut()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="flex center gap-12">
+        <div class="icon-btn menu-btn" onclick="toggleSidebar(true)" style="color:var(--navy-700);border-color:var(--line)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </div>
+        <div>
+          <h1 id="page-title">Overview</h1>
+          <div class="meta" id="page-sub">—</div>
+        </div>
+      </div>
+      <div class="topbar-actions flex center gap-12">
+        <span class="status-pill" id="device-status-pill" title="Biometric device status" onclick="showView('device')" style="cursor:pointer;">
+          <span class="dot"></span><span id="device-status-pill-text">Biometric: —</span>
+        </span>
+        <button class="btn btn-gold btn-sm" onclick="openAddEmployee()">+ Add Staff Member</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===================== OVERVIEW ===================== -->
+      <section id="view-overview">
+        <div class="card card-pad hidden" id="pwreq-alert" style="margin-bottom:20px; background:var(--late-tint); border:none;">
+          <div class="flex between center" style="flex-wrap:wrap; gap:10px;">
+            <div class="flex center gap-12">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--late)" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+              <div>
+                <div style="font-weight:700; color:var(--late);" id="pwreq-alert-text">— pending password reset request(s)</div>
+                <div class="muted" style="font-size:12.5px;">Staff members are waiting for a new password to sign in.</div>
+              </div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="showView('account'); document.getElementById('pwreq-card').scrollIntoView({behavior:'smooth'});">Review requests</button>
+          </div>
+        </div>
+        <div class="flex gap-8" style="margin-bottom:14px; align-items:center;">
+          <div class="sub" id="ov-date-strip" style="margin:0;">—</div>
+          <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadOverview)"></button>
+        </div>
+        <div class="grid grid-stats" style="margin-bottom:20px;">
+          <div class="card stat-card">
+            <div class="ic" style="background:var(--info-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-4 3.5-6 6.5-6s5.5 2 6.5 6"/></svg></div>
+            <div class="num" id="ov-active">—</div>
+            <div class="lbl">Active staff on roll</div>
+          </div>
+          <div class="card stat-card">
+            <div class="ic" style="background:var(--success-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="num" id="ov-present">—</div>
+            <div class="lbl">Present today</div>
+          </div>
+          <div class="card stat-card">
+            <div class="ic" style="background:var(--late-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--late)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="num" id="ov-late">—</div>
+            <div class="lbl">Late arrivals today</div>
+          </div>
+          <div class="card stat-card">
+            <div class="ic" style="background:#EEE7F8"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B4FA0" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+            <div class="num" id="ov-onleave">—</div>
+            <div class="lbl">On leave today</div>
+          </div>
+          <div class="card stat-card">
+            <div class="ic" style="background:var(--danger-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div class="num" id="ov-absent">—</div>
+            <div class="lbl">Absent today</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card card-pad">
+            <div class="section-head">
+              <div><h3>Attendance trend</h3><div class="sub">Last 14 working days (<span class="js-workweek-label">Sun–Fri</span>), company-wide</div></div>
+            </div>
+            <canvas id="chart-trend" height="220"></canvas>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>Pending approvals</h3></div>
+            <div id="ov-pending-list"></div>
+            <button class="btn btn-ghost btn-sm" style="width:100%; margin-top:14px;" onclick="reviewRequest('early')">View all requests</button>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-top:20px;">
+          <div class="section-head"><h3>Department presence today</h3></div>
+          <canvas id="chart-dept" height="110"></canvas>
+        </div>
+      </section>
+
+      <!-- ===================== TODAY ===================== -->
+      <section id="view-today" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3 id="today-date-label">—</h3><div class="sub">Live check-in / check-out log, with device IP and last known location</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <input class="search-input" placeholder="Search staff…" id="today-search" oninput="renderToday()">
+              <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadToday)"></button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="today-table">
+              <thead><tr><th>Staff</th><th>Department</th><th>Shift</th><th>Check In</th><th>Check Out</th><th>Hours</th><th>Modality</th><th>Status</th><th>IP &amp; Location</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== APPROVALS ===================== -->
+      <section id="view-requests" class="hidden">
+        <div class="tab-row" id="req-type-tabs">
+          <div class="tab active" id="req-type-early" onclick="setReqType('early')">Early Checkouts</div>
+          <div class="tab" id="req-type-leave" onclick="setReqType('leave')">Leave Requests</div>
+          <div class="tab" id="req-type-correction" onclick="setReqType('correction')">Fix Requests</div>
+        </div>
+        <div class="tab-row" id="req-status-tabs">
+          <div class="tab active" data-status="pending" onclick="setReqFilter('pending')">Pending</div>
+          <div class="tab" data-status="approved" onclick="setReqFilter('approved')">Approved</div>
+          <div class="tab" data-status="rejected" onclick="setReqFilter('rejected')">Rejected</div>
+          <div class="tab" data-status="" onclick="setReqFilter('')">All</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3 id="req-table-title">Early checkout requests</h3><div class="sub">Both the employee's manager and HR must approve before status changes to Approved</div></div>
+          </div>
+          <div class="flex gap-8" style="flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;">
+            <div class="field" style="margin:0;"><label>From (Miti)</label>
+              <div class="flex gap-8"><select id="req-from-month" class="select"></select><select id="req-from-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>To (Miti)</label>
+              <div class="flex gap-8"><select id="req-to-month" class="select"></select><select id="req-to-year" class="select"></select></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, loadRequests)">Apply filters</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearReqDateFilter()">Clear dates</button>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadRequests)"></button>
+          </div>
+          <div class="table-wrap">
+            <table id="requests-table">
+              <thead id="requests-thead"><tr><th>Staff</th><th>Date</th><th>Departed</th><th>Reason</th><th>Manager</th><th>HR</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== HOLIDAYS ===================== -->
+      <section id="view-holidays" class="hidden">
+        <div class="card card-pad" style="margin-bottom:20px;">
+          <div class="section-head">
+            <div><h3>Add a company holiday</h3><div class="sub">Holidays are excluded from working days across reports and dashboards</div></div>
+          </div>
+          <div class="flex gap-12" style="flex-wrap:wrap; align-items:flex-end;">
+            <div class="field" style="margin:0;"><label>Miti month</label><select id="hol-bs-month" class="select"></select></div>
+            <div class="field" style="margin:0;"><label>Year (BS)</label><select id="hol-bs-year" class="select"></select></div>
+            <div class="field" style="margin:0;"><label>Day</label><select id="hol-bs-day" class="select"></select></div>
+            <div class="field" style="margin:0; flex:1; min-width:200px;"><label>Name</label><input id="hol-name" class="select" placeholder="e.g. Dashain, Constitution Day…"></div>
+            <div class="field" style="margin:0;"><button class="btn btn-primary btn-sm" onclick="addHoliday()">Add holiday</button></div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h3>Holiday calendar</h3><div class="sub" id="hol-count">—</div></div>
+          <div class="table-wrap">
+            <table id="holidays-table">
+              <thead><tr><th>Miti</th><th>Date (AD)</th><th>Day</th><th>Holiday</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== DIRECTORY ===================== -->
+      <section id="view-directory" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Staff directory</h3><div class="sub" id="dir-count">—</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <select id="dir-dept-filter" class="select" onchange="renderDirectory()"><option value="">All departments</option></select>
+              <input class="search-input" placeholder="Search by name or ID…" id="dir-search" oninput="renderDirectory()">
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="directory-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortDirectory(0,'name')">Staff <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDirectory(1,'department')">Department <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDirectory(2,'designation')">Designation <span class="sort-ind"></span></th>
+                <th>Manager</th>
+                <th class="sortable" onclick="sortDirectory(4,'shiftName')">Shift <span class="sort-ind"></span></th>
+                <th>Today</th>
+                <th class="sortable" onclick="sortDirectory(6,'status')">Status <span class="sort-ind"></span></th>
+                <th>Leave Balance</th>
+                <th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="directory-pagination"></div>
+        </div>
+      </section>
+
+      <!-- ===================== ATTENDANCE LOG ===================== -->
+      <section id="view-log" class="hidden">
+        <div class="card card-pad" style="margin-bottom:20px;">
+          <div class="section-head"><h3>Filter records</h3></div>
+          <div class="flex gap-12" style="flex-wrap:wrap;">
+            <div class="field" style="margin:0;"><label>From (Miti)</label>
+              <div class="flex gap-8"><select id="log-from-month" class="select"></select><select id="log-from-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>To (Miti)</label>
+              <div class="flex gap-8"><select id="log-to-month" class="select"></select><select id="log-to-year" class="select"></select></div>
+            </div>
+            <div class="field" style="margin:0;"><label>Department</label><select id="log-dept" class="select"><option value="">All</option></select></div>
+            <div class="field" style="margin:0;"><label>Status</label><select id="log-status" class="select">
+              <option value="">All</option><option value="present">Present</option><option value="late">Late</option>
+            </select></div>
+            <div class="field" style="margin:0; align-self:flex-end;">
+              <div class="flex gap-8">
+                <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, loadLog)">Apply filters</button>
+                <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadLog)"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><h3>Records</h3><div class="sub" id="log-count">—</div></div>
+          <div class="flex gap-8" style="margin-bottom:16px; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="openAdjustModal()">✎ Adjust attendance</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportOverall('excel')">⬇ Export Excel</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportOverall('pdf')">⬇ Export PDF</button>
+          </div>
+          <div class="table-wrap">
+            <table id="log-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortLog('date')">Miti <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('date')">Date (AD) <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('employeeName')">Staff <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('department')">Department <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('checkIn')">Check In <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('checkOut')">Check Out <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('hoursWorked')">Hours <span class="sort-ind"></span></th>
+                <th>Modality</th>
+                <th class="sortable" onclick="sortLog('source')">Source <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortLog('status')">Status <span class="sort-ind"></span></th>
+                <th>IP &amp; Location</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="log-pagination"></div>
+        </div>
+      </section>
+
+      <!-- ===================== BIOMETRIC DEVICE ===================== -->
+      <section id="view-device" class="hidden">
+        <div class="card card-pad collapsible" data-card-id="dev-devices" style="margin-bottom:20px;">
+          <div class="section-head">
+            <div><h3>Biometric devices</h3><div class="sub">Add one per location — e.g. Main Gate, Library Block</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddDeviceModal()">+ Add device</button>
+          </div>
+          <div class="card-body">
+          <div class="table-wrap">
+            <table id="devices-table">
+              <thead><tr><th>Name</th><th>Location</th><th>IP address</th><th>Last synced</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="flex gap-8" style="margin-top:16px; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="withBtnLoading(this, () => fetchFromDevice('all'))">⟳ Fetch from all devices</button>
+          </div>
+          <div class="muted" style="font-size:12px; margin-top:10px;">Fetching pulls users and punches from the device(s) but never changes attendance by itself — you'll get a chance to review and confirm before anything is applied.</div>
+          </div>
+        </div>
+
+        <div class="card card-pad hidden" id="pending-apply-card" style="margin-bottom:20px; background:var(--late-tint); border:none;">
+          <div class="flex between center" style="flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-weight:700; color:var(--late);" id="pending-apply-text">— pending punch(es) ready to apply</div>
+              <div class="muted" style="font-size:12.5px;">Fetched from the device but not yet folded into attendance.</div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="openApplyPreviewModal()">Review &amp; apply</button>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="dev-users" style="margin-bottom:20px;">
+          <div class="section-head">
+            <div><h3>Enrolled device users</h3><div class="sub" id="dev-users-count">—</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddDeviceUserModal()">+ Add device user</button>
+          </div>
+          <div class="card-body">
+          <div class="table-wrap">
+            <table id="dev-users-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortDeviceUsers(0,'deviceName')">Device <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDeviceUsers(1,'uid')">Device UID <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDeviceUsers(2,'name')">Name on device <span class="sort-ind"></span></th>
+                <th>Card</th><th>Linked staff</th><th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="dev-users-pagination"></div>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="dev-logs" style="margin-bottom:20px;">
+          <div class="section-head"><h3>Raw device records</h3><div class="sub" id="dev-logs-count">Every punch as recorded on the device, independent of attendance</div></div>
+          <div class="card-body">
+          <div class="table-wrap">
+            <table id="dev-logs-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortDevLogs('timestamp')">Timestamp <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDevLogs('deviceName')">Device <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDevLogs('uid')">Device user <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDevLogs('employeeName')">Linked staff <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortDevLogs('processed')">Folded into attendance? <span class="sort-ind"></span></th>
+                <th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="dev-logs-pagination"></div>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="dev-sync-log">
+          <div class="section-head"><h3>Sync log</h3><div class="sub">History of fetch/apply runs, for troubleshooting</div></div>
+          <div class="card-body">
+          <div class="table-wrap">
+            <table id="dev-sync-log-table">
+              <thead><tr><th>Started</th><th>Stage</th><th>Status</th><th>Users</th><th>New punches</th><th>Attendance created/updated</th><th>Triggered by</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== COMPANY ===================== -->
+      <section id="view-company" class="hidden">
+        <div class="card card-pad collapsible" data-card-id="company-settings" style="margin-bottom:24px;">
+          <div class="section-head"><h3>Company settings</h3><div class="sub">Shown across sign-in screens, sidebars and reports</div></div>
+          <div class="card-body">
+          <div class="field" style="max-width:420px;"><label>Company name</label><input id="settings-company-name" placeholder="e.g. Acme Pvt. Ltd."></div>
+          <div class="flex center gap-16" style="margin-bottom:22px;">
+            <div class="seal" id="settings-logo-preview" style="width:56px;height:56px;flex-shrink:0;"><img src="/img/logo.png" alt="Current logo"></div>
+            <div style="flex:1;">
+              <input type="file" id="logo-file-input" accept="image/png,image/jpeg" class="hidden" onchange="onLogoFileChosen(this)">
+              <div class="flex gap-8">
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('logo-file-input').click()">Change logo</button>
+                <button class="btn btn-ghost btn-sm" id="remove-logo-btn" onclick="removeCompanyLogo()">Remove logo</button>
+              </div>
+              <div class="muted" style="font-size:11.5px; margin-top:8px;">PNG or JPG · up to 3MB · square works best</div>
+            </div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="saveCompanyName()">Save company name</button>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="company-office-location" style="margin-bottom:24px;">
+          <div class="section-head"><h3>Office location</h3><div class="sub">Used to mark a check-in/check-out as "Office" vs "Remote" — check-ins outside this radius are always recorded as Remote. Leave unset to treat every check-in as Remote.</div></div>
+          <div class="card-body">
+          <div class="flex gap-16" style="flex-wrap:wrap; margin-bottom:16px;">
+            <div class="field" style="max-width:220px;"><label>Latitude</label><input id="settings-office-lat" type="number" step="any" min="-90" max="90" placeholder="e.g. 27.721021"></div>
+            <div class="field" style="max-width:220px;"><label>Longitude</label><input id="settings-office-lng" type="number" step="any" min="-180" max="180" placeholder="e.g. 85.299436"></div>
+            <div class="field" style="max-width:180px;"><label>Radius (meters)</label><input id="settings-office-radius" type="number" step="1" min="10" max="20000" placeholder="300"></div>
+          </div>
+          <div class="flex gap-8" style="margin-bottom:14px; flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="useCurrentLocationForOffice(this)">Use my current location</button>
+            <button class="btn btn-ghost btn-sm" id="clear-office-location-btn" onclick="clearOfficeLocation()">Clear</button>
+          </div>
+          <div class="muted" id="office-location-status" style="font-size:11.5px; margin-bottom:16px;"></div>
+          <button class="btn btn-gold btn-sm" onclick="saveOfficeLocation()">Save office location</button>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="company-workweek">
+          <div class="section-head"><h3>Work week</h3><div class="sub">Days marked here are treated as weekly off across attendance, reports and the sign-in screens</div></div>
+          <div class="card-body">
+          <div class="flex gap-14" style="flex-wrap:wrap; margin-bottom:24px; row-gap:14px;" id="workweek-days">
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="0" style="width:15px; height:15px; margin:0;">Sun</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="1" style="width:15px; height:15px; margin:0;">Mon</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="2" style="width:15px; height:15px; margin:0;">Tue</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="3" style="width:15px; height:15px; margin:0;">Wed</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="4" style="width:15px; height:15px; margin:0;">Thu</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="5" style="width:15px; height:15px; margin:0;">Fri</label>
+            <label class="badge badge-neutral" style="cursor:pointer; padding:10px 18px; font-size:13.5px; display:inline-flex; align-items:center; gap:8px;"><input type="checkbox" value="6" style="width:15px; height:15px; margin:0;">Sat</label>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="saveWorkWeek()">Save work week</button>
+          </div>
+        </div>
+
+        <div class="card card-pad collapsible" data-card-id="company-auto-sync" style="margin-top:24px;">
+          <div class="section-head"><h3>Automatic biometric sync</h3><div class="sub">Fetch and apply pending punches from every device on a schedule, no manual click needed</div></div>
+          <div class="card-body">
+          <div class="flex center gap-14" style="flex-wrap:wrap;">
+            <label class="flex center gap-8" style="cursor:pointer;">
+              <span class="toggle-switch"><input type="checkbox" id="auto-sync-enabled"><span class="toggle-track"><span class="toggle-thumb"></span></span></span>
+              <span style="font-weight:600; font-size:13.5px;">Enable automatic sync</span>
+            </label>
+            <div class="field" style="margin:0;">
+              <label>Time (daily)</label>
+              <input type="time" id="auto-sync-time" class="input" style="width:140px;">
+            </div>
+            <button class="btn btn-gold btn-sm" style="align-self:flex-end;" onclick="saveAutoSync()">Save</button>
+          </div>
+          <div class="muted" style="font-size:12px; margin-top:12px;">When enabled, this fetches from every device and applies pending punches automatically once a day at the time above — attendance updates without HR needing to open this screen. You can still fetch and review manually any time from the Biometric Device tab.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== ACCOUNT ===================== -->
+      <section id="view-account" class="hidden">
+        <div class="card card-pad" style="margin-bottom:24px;">
+          <div class="flex center gap-16">
+            <div class="avatar" id="account-avatar" style="width:62px;height:62px;font-size:20px;flex-shrink:0;">--</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:700; font-size:17px;" id="account-name">—</div>
+              <div class="muted" style="font-size:13px;" id="account-role">—</div>
+              <div class="flex gap-8" style="margin-top:9px;">
+                <input type="file" id="admin-avatar-file-input" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="onAdminAvatarFileChosen(this)">
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('admin-avatar-file-input').click()">Change photo</button>
+                <button class="btn btn-ghost btn-sm" id="admin-remove-photo-btn" onclick="removeAdminAvatar()">Remove photo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-bottom:24px; max-width:480px;">
+          <div class="section-head"><h3>Change password</h3><div class="sub">Choose something you haven't used elsewhere</div></div>
+          <div class="field"><label>Current password</label><input type="password" id="pw-current" placeholder="••••••••"></div>
+          <div class="field"><label>New password</label><input type="password" id="pw-new" placeholder="At least 8 characters"></div>
+          <div class="field"><label>Confirm new password</label><input type="password" id="pw-confirm" placeholder="Re-enter new password"></div>
+          <button class="btn btn-primary btn-sm btn-block" onclick="changeAdminPassword()">Update password</button>
+        </div>
+
+        <div class="card card-pad" id="pwreq-card">
+          <div class="section-head">
+            <div><h3>Password reset requests</h3><div class="sub">Staff who chose &ldquo;Ask HR to assign a new password&rdquo; on the sign-in screen</div></div>
+            <button class="btn btn-ghost btn-sm btn-icon refresh-icon-btn" title="Refresh" onclick="withIconBtnLoading(this, loadPasswordResetRequests)"></button>
+          </div>
+          <div class="table-wrap" style="margin-top:6px;">
+            <table id="pw-reset-requests-table">
+              <thead><tr>
+                <th class="sortable" onclick="sortTable('pw-reset-requests-table', 0)">Requested <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('pw-reset-requests-table', 1)">Name <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('pw-reset-requests-table', 2)">Email <span class="sort-ind"></span></th>
+                <th class="sortable" onclick="sortTable('pw-reset-requests-table', 3)">Status <span class="sort-ind"></span></th>
+                <th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="app-footer">
+      <span id="footer-copyright">© <span id="footer-year">2026</span> Your Company</span>
+      <span class="powered-by">Powered by <strong>KutkiTech</strong></span>
+    </footer>
+  </div>
+</div>
+
+<!-- Employee detail / report modal -->
+<div class="modal-backdrop hidden" id="employee-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="flex between center" style="margin-bottom:6px;">
+      <h3 id="em-name">—</h3>
+      <span id="em-status-badge"></span>
+    </div>
+    <p class="sub" id="em-meta">—</p>
+    <div class="flex gap-8" style="margin-bottom:14px; align-items:center;">
+      <span class="sub" style="margin:0;">Miti month:</span>
+      <select id="em-bs-month" class="select" onchange="openEmployee(CURRENT_EMPLOYEE.id, this.value, document.getElementById('em-bs-year').value)"></select>
+      <select id="em-bs-year" class="select" onchange="openEmployee(CURRENT_EMPLOYEE.id, document.getElementById('em-bs-month').value, this.value)"></select>
+    </div>
+    <div class="grid grid-3" style="margin-bottom:16px;">
+      <div class="card card-pad" style="padding:14px;"><div class="lbl" style="font-size:11px;color:var(--muted)">Attendance</div><div class="num" style="font-size:20px;" id="em-attendance">—</div></div>
+      <div class="card card-pad" style="padding:14px;"><div class="lbl" style="font-size:11px;color:var(--muted)">Punctuality</div><div class="num" style="font-size:20px;" id="em-punct">—</div></div>
+      <div class="card card-pad" style="padding:14px;"><div class="lbl" style="font-size:11px;color:var(--muted)">Hours / day</div><div class="num" style="font-size:20px;" id="em-hours">—</div></div>
+    </div>
+    <canvas id="em-chart" height="140"></canvas>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('employee-modal')">Close</button>
+      <button class="btn btn-danger-ghost" id="em-deactivate-btn" onclick="toggleEmployeeStatus()">Mark On Leave</button>
+    </div>
+    <div class="modal-actions" style="margin-top:8px;">
+      <button class="btn btn-ghost" onclick="exportEmployee('excel')">⬇ Export Excel</button>
+      <button class="btn btn-ghost" onclick="exportEmployee('pdf')">⬇ Export PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add employee modal -->
+<div class="modal-backdrop hidden" id="add-modal">
+  <div class="modal modal-wide">
+    <h3>Add a staff member</h3>
+    <p class="sub">They'll be issued a temporary password to sign in.</p>
+    <div class="field-row">
+      <div class="field"><label>Full name</label><input id="add-name" placeholder="e.g. Anjali Karki"></div>
+      <div class="field"><label>Work email</label><input id="add-email" placeholder="jane.doe@yourcompany.com"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Department</label><input id="add-dept" placeholder="e.g. Engineering"></div>
+      <div class="field"><label>Designation</label><input id="add-desig" placeholder="e.g. Software Engineer"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Phone</label><input id="add-phone" placeholder="98XXXXXXXX"></div>
+      <div class="field"><label>Reports to</label><select id="add-manager" class="select" style="width:100%;"><option value="">No manager</option></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Shift name</label>
+        <select id="add-shift-name" class="select" style="width:100%;" onchange="applyShiftPreset()">
+          <option value="General Shift" data-start="09:00" data-end="18:00">General Shift · 09:00 – 18:00</option>
+          <option value="Early Shift" data-start="07:00" data-end="16:00">Early Shift · 07:00 – 16:00</option>
+          <option value="Day Shift" data-start="10:00" data-end="19:00">Day Shift · 10:00 – 19:00</option>
+          <option value="Evening Shift" data-start="14:00" data-end="23:00">Evening Shift · 14:00 – 23:00</option>
+          <option value="Custom">Custom…</option>
+        </select>
+      </div>
+      <div class="field-row" style="flex:1; margin-bottom:18px;">
+        <div class="field" style="margin-bottom:0;"><label>Shift start</label><input type="time" id="add-shift-start" value="09:00"></div>
+        <div class="field" style="margin-bottom:0;"><label>Shift end</label><input type="time" id="add-shift-end" value="18:00"></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Casual Leave (days/yr)</label><input type="number" min="0" id="add-lv-casual" value="12"></div>
+      <div class="field"><label>Sick Leave (days/yr)</label><input type="number" min="0" id="add-lv-sick" value="8"></div>
+      <div class="field"><label>Annual Leave (days/yr)</label><input type="number" min="0" id="add-lv-annual" value="15"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Join Miti month</label><select id="add-join-month" class="select"></select></div>
+      <div class="field"><label>Join year (BS)</label><select id="add-join-year" class="select"></select></div>
+      <div class="field"><label>Join day</label><select id="add-join-day" class="select"></select></div>
+    </div>
+    <div class="field-row">
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="add-auto-attendance"> Auto check-in / check-out</label>
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="add-exempt-approval"> No approval required</label>
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="add-view-all-reports"> Allow view report of all staff</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitAddEmployee()">Add Staff Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit employee modal -->
+<div class="modal-backdrop hidden" id="edit-modal">
+  <div class="modal modal-wide">
+    <h3>Edit staff member</h3>
+    <p class="sub" id="edit-modal-sub">—</p>
+    <input type="hidden" id="edit-id">
+    <div class="field-row">
+      <div class="field"><label>Full name</label><input id="edit-name"></div>
+      <div class="field"><label>Work email</label><input id="edit-email"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Department</label><input id="edit-dept"></div>
+      <div class="field"><label>Designation</label><input id="edit-desig"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Phone</label><input id="edit-phone"></div>
+      <div class="field"><label>Reports to</label><select id="edit-manager" class="select" style="width:100%;"><option value="">No manager</option></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field" style="flex:1 1 100%;">
+        <label>Shift name</label>
+        <select id="edit-shift-name" class="select" style="width:100%;" onchange="applyShiftPreset('edit')">
+          <option value="General Shift" data-start="09:00" data-end="18:00">General Shift · 09:00 – 18:00</option>
+          <option value="Early Shift" data-start="07:00" data-end="16:00">Early Shift · 07:00 – 16:00</option>
+          <option value="Day Shift" data-start="10:00" data-end="19:00">Day Shift · 10:00 – 19:00</option>
+          <option value="Evening Shift" data-start="14:00" data-end="23:00">Evening Shift · 14:00 – 23:00</option>
+          <option value="Custom">Custom…</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Shift start</label><input type="time" id="edit-shift-start"></div>
+      <div class="field"><label>Shift end</label><input type="time" id="edit-shift-end"></div>
+      <div class="field"><label>Status</label>
+        <select id="edit-status" class="select" style="width:100%;"><option value="active">Active</option><option value="on-leave">On Leave</option><option value="inactive">Inactive (blocks login)</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Casual Leave remaining</label><input type="number" min="0" id="edit-lv-casual"></div>
+      <div class="field"><label>Sick Leave remaining</label><input type="number" min="0" id="edit-lv-sick"></div>
+      <div class="field"><label>Annual Leave remaining</label><input type="number" min="0" id="edit-lv-annual"></div>
+    </div>
+    <p class="sub" id="edit-lv-used-note" style="margin-top:-10px;"></p>
+    <div class="field-row">
+      <div class="field"><label>Join Miti month</label><select id="edit-join-month" class="select"></select></div>
+      <div class="field"><label>Join year (BS)</label><select id="edit-join-year" class="select"></select></div>
+      <div class="field"><label>Join day</label><select id="edit-join-day" class="select"></select></div>
+    </div>
+    <p class="sub" id="edit-join-note" style="margin-top:-10px;"></p>
+    <div class="field-row">
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="edit-auto-attendance"> Auto check-in / check-out</label>
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="edit-exempt-approval"> No approval required</label>
+      <label class="flex gap-8" style="align-items:center; font-weight:600; font-size:13px;"><input type="checkbox" id="edit-view-all-reports"> Allow view report of all staff</label>
+    </div>
+    <div style="background:var(--late-tint); border-radius:12px; padding:14px 16px; margin-top:6px;">
+      <div class="flex between center" style="flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-weight:700; font-size:13px; color:var(--late);">Emergency password reset</div>
+          <div class="muted" style="font-size:12px; margin-top:2px;">Last resort — sets their password back to <span class="mono">Welcome@123</span> immediately, no email sent. Tell them directly and have them change it after signing in.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="resetToDefaultPassword()">Reset to default</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitEditEmployee()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete employee confirm modal -->
+<div class="modal-backdrop hidden" id="delete-modal">
+  <div class="modal">
+    <h3>Remove this staff member?</h3>
+    <p class="sub" id="delete-modal-sub">This also permanently deletes their attendance history and requests. This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('delete-modal')">Cancel</button>
+      <button class="btn btn-danger-ghost" id="delete-confirm-btn">Remove Staff Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Emergency password reset confirm modal -->
+<div class="modal-backdrop hidden" id="reset-pw-modal">
+  <div class="modal">
+    <h3>Reset password to default?</h3>
+    <p class="sub" id="reset-pw-modal-sub">This immediately sets their password back to <span class="mono">Welcome@123</span>. No email is sent — you'll need to tell them directly and have them change it after signing in.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('reset-pw-modal')">Cancel</button>
+      <button class="btn btn-gold" id="reset-pw-confirm-btn" onclick="confirmResetToDefaultPassword()">Reset to default</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / rename biometric device user (device-side name + UID; no biometric capture — see Biometric Device screen for that) -->
+<div class="modal-backdrop hidden" id="device-user-modal">
+  <div class="modal">
+    <h3 id="device-user-modal-title">Add device user</h3>
+    <p class="sub" id="device-user-modal-sub">Creates a name and UID on the device — they'll still need to enroll their fingerprint or face at the device itself.</p>
+    <input type="hidden" id="device-user-modal-device-id">
+    <input type="hidden" id="device-user-modal-uid">
+    <div class="field" id="device-user-modal-device-field">
+      <label>Device</label>
+      <select id="device-user-modal-device-select" class="select"></select>
+    </div>
+    <div class="field"><label>Name</label><input id="device-user-modal-name" class="input" placeholder="e.g. Sambridhi Neupane"></div>
+    <div class="field" id="device-user-modal-card-field"><label>Card number (optional)</label><input id="device-user-modal-card" class="input" placeholder="Leave blank if not using card access"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('device-user-modal')">Cancel</button>
+      <button class="btn btn-gold" id="device-user-modal-save-btn">Create user</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit biometric device -->
+<div class="modal-backdrop hidden" id="device-modal">
+  <div class="modal">
+    <h3 id="device-modal-title">Add biometric device</h3>
+    <p class="sub">The device must be reachable on your network (LAN, port-forward, or VPN).</p>
+    <input type="hidden" id="device-modal-id">
+    <div class="field"><label>Name</label><input id="device-modal-name" class="input" placeholder="e.g. ZKTeco K40"></div>
+    <div class="field"><label>Location</label><input id="device-modal-location" class="input" placeholder="e.g. Main Gate"></div>
+    <div class="field-row">
+      <div class="field" style="flex:2;"><label>IP address</label><input id="device-modal-ip" class="input" placeholder="e.g. 192.168.1.201"></div>
+      <div class="field"><label>Port</label><input id="device-modal-port" class="input" placeholder="4370"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('device-modal')">Cancel</button>
+      <button class="btn btn-ghost" onclick="withBtnLoading(this, testDeviceModalConnection)">Test connection</button>
+      <button class="btn btn-gold" onclick="withBtnLoading(this, saveDeviceModal)">Save device</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete device confirm -->
+<div class="modal-backdrop hidden" id="delete-device-modal">
+  <div class="modal">
+    <h3>Remove this device?</h3>
+    <p class="sub" id="delete-device-modal-sub">Its enrolled-user links and raw punch history will be removed too. This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('delete-device-modal')">Cancel</button>
+      <button class="btn btn-danger-ghost" id="delete-device-confirm-btn">Remove device</button>
+    </div>
+  </div>
+</div>
+
+<!-- Review & apply pending biometric punches -->
+<div class="modal-backdrop hidden" id="apply-preview-modal">
+  <div class="modal modal-wide">
+    <h3>Review before updating attendance</h3>
+    <p class="sub" id="apply-preview-sub">These days will be created or updated from biometric punches, with modality set to Office.</p>
+    <div class="table-wrap" style="max-height:360px; overflow-y:auto;">
+      <table id="apply-preview-table">
+        <thead><tr><th>Date</th><th>Staff</th><th>Punches</th><th>Current</th><th>New (from device)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('apply-preview-modal')">Cancel</button>
+      <button class="btn btn-gold" id="apply-preview-confirm-btn" onclick="confirmApplyPending()">Confirm &amp; update attendance</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manual attendance adjustment modal -->
+<div class="modal-backdrop hidden" id="adjust-modal">
+  <div class="modal modal-wide">
+    <h3>Adjust attendance</h3>
+    <p class="sub">Applied immediately — no approval needed. Use this for corrections and mishaps.</p>
+    <div class="field-row">
+      <div class="field"><label>Staff member</label><select id="adj-employee" class="select" style="width:100%;"></select></div>
+      <div class="field"><label>Date</label><input type="date" id="adj-date"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Check-in time</label><input type="time" id="adj-checkin"></div>
+      <div class="field"><label>Check-out time</label><input type="time" id="adj-checkout"></div>
+      <div class="field">
+        <label>Status</label>
+        <select id="adj-status" class="select" style="width:100%;">
+          <option value="">Auto-calculate</option>
+          <option value="present">Present</option>
+          <option value="late">Late</option>
+          <option value="on-leave">On Leave</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger-ghost" onclick="submitAdjustment(true)">Clear record for this day</button>
+      <button class="btn btn-ghost" onclick="closeModal('adjust-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitAdjustment(false)">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject reason modal -->
+<div class="modal-backdrop hidden" id="reject-modal">
+  <div class="modal">
+    <h3>Decline this request?</h3>
+    <p class="sub">The staff member will see this decision on their portal.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('reject-modal')">Cancel</button>
+      <button class="btn btn-danger-ghost" id="reject-confirm-btn">Decline Request</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+
+<script src="/js/common.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

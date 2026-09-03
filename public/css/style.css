@@ -1,0 +1,719 @@
+/* ============================================================
+   KutkiTech Pvt. Ltd. — Attendance Management System
+   Design tokens: circuit-blue + growth-green (from the KutkiTech
+   mark), Sora (display) / Inter (UI) / JetBrains Mono (data)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --canvas: #EEF2FA;
+  --canvas-2: #E3E9F6;
+  --surface: #FFFFFF;
+  --surface-soft: #F6F8FD;
+
+  /* Blue ramp — from the KutkiTech mark */
+  --navy-900: #0C1633;
+  --navy-800: #12204A;
+  --navy-700: #182C5E;
+  --navy-600: #22397A;
+  --navy-500: #2E4A93;
+
+  /* Green accent — from the K/T lettering in the mark */
+  --brass: #5FA82E;
+  --brass-light: #8CC63F;
+  --brass-soft: #DCF0C4;
+  --brass-tint: #EFF9E4;
+
+  --ink: #101526;
+  --ink-soft: #29304A;
+  --muted: #666F8C;
+  --muted-2: #99A1BC;
+  --line: #DCE2F0;
+  --line-soft: #E9EDF7;
+
+  --success: #2F8F5B;
+  --success-tint: #E4F4EB;
+  --danger: #C0463A;
+  --danger-tint: #FBEAE8;
+  --late: #C2841F;
+  --late-tint: #FBF1DF;
+  --info: #2C6FA8;
+  --info-tint: #E6F0F8;
+
+  --display: 'Sora', 'Inter', sans-serif;
+  --body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --shadow-sm: 0 1px 2px rgba(12,22,51,.06), 0 1px 1px rgba(12,22,51,.04);
+  --shadow: 0 8px 24px -8px rgba(12,22,51,.16), 0 2px 6px rgba(12,22,51,.06);
+  --shadow-lg: 0 24px 60px -20px rgba(12,22,51,.35);
+}
+
+*,*::before,*::after{ box-sizing: border-box; }
+html,body{ height:100%; overflow-x:hidden; }
+body{
+  margin:0;
+  font-family: var(--body);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01" 1;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; }
+::selection{ background: var(--brass-soft); color: var(--navy-900); }
+
+:focus-visible{
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+h1,h2,h3,h4{ font-family: var(--display); margin:0; color: var(--navy-900); letter-spacing: -.01em; font-weight:700; }
+.mono{ font-family: var(--mono); }
+
+.hidden{ display:none !important; }
+
+/* ---------------- Scrollbar ---------------- */
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background: transparent; }
+::-webkit-scrollbar-thumb{ background: #C3CBE2; border-radius: 10px; border:2px solid var(--canvas); }
+::-webkit-scrollbar-thumb:hover{ background: #A9B3D1; }
+
+/* ============================================================
+   AUTH / LOGIN SCREEN
+   ============================================================ */
+.auth-screen{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns: 1.15fr 1fr;
+  background: var(--navy-900);
+}
+@media (max-width: 920px){
+  .auth-screen{ grid-template-columns: 1fr; }
+  .auth-aside{ display:none; }
+}
+
+.auth-aside{
+  position:relative;
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(140,198,63,.16), transparent 60%),
+    radial-gradient(700px 500px at 100% 110%, rgba(46,74,147,.55), transparent 60%),
+    linear-gradient(165deg, var(--navy-900) 0%, var(--navy-800) 55%, var(--navy-700) 100%);
+  color:#fff;
+  padding: 64px 56px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:hidden;
+}
+.auth-aside::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image: repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 64px);
+  pointer-events:none;
+}
+.seal{
+  width:64px; height:64px; border-radius:16px;
+  background: #fff;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  flex-shrink:0;
+  padding:8px;
+  box-shadow: var(--shadow-sm);
+}
+.seal img{ width:100%; height:100%; object-fit:contain; }
+.brand-row{ display:flex; align-items:center; gap:16px; position:relative; z-index:1;}
+.brand-name{ font-family: var(--display); font-size:18px; font-weight:700; letter-spacing:.01em; }
+.brand-sub{ font-size:12px; color: var(--brass-light); text-transform:uppercase; letter-spacing:.14em; margin-top:2px; }
+
+.aside-hero{ position:relative; z-index:1; max-width:480px; }
+.aside-eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; text-transform:uppercase; letter-spacing:.16em;
+  color: var(--brass-light); margin-bottom:22px;
+}
+.aside-eyebrow::before{ content:""; width:22px; height:1px; background: var(--brass-light); }
+.aside-hero h1{
+  color:#fff; font-size: 40px; line-height:1.14; font-weight:700; margin-bottom:18px;
+}
+.aside-hero p{ color: rgba(255,255,255,.62); font-size:15.5px; line-height:1.65; }
+
+.aside-stats{ display:flex; gap:36px; position:relative; z-index:1; margin-top:46px; }
+.aside-stat .num{ font-family: var(--display); font-size:30px; color:#fff; font-weight:700; }
+.aside-stat .lbl{ font-size:11.5px; color: rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.1em; margin-top:4px; }
+
+.auth-main{
+  background: var(--canvas);
+  display:flex; align-items:center; justify-content:center;
+  padding: 40px 28px;
+}
+.auth-card{ width:100%; max-width:400px; }
+.auth-card-mobile-brand{ display:none; }
+@media (max-width:920px){
+  .auth-card-mobile-brand{ display:flex; align-items:center; gap:12px; margin-bottom:34px; }
+  .auth-card-mobile-brand .seal{ width:46px; height:46px; }
+  .auth-card-mobile-brand .brand-name{ color: var(--navy-900); }
+  .auth-card-mobile-brand .brand-sub{ color: var(--brass); }
+}
+
+.role-toggle{
+  display:flex; background: var(--surface); border:1px solid var(--line);
+  border-radius: 999px; padding:4px; margin-bottom:30px; gap:4px;
+}
+.role-toggle button{
+  flex:1; border:none; background:transparent; padding:10px 14px;
+  font-size:13.5px; font-weight:600; color: var(--muted); border-radius:999px; cursor:pointer;
+  transition: all .18s ease;
+}
+.role-toggle button.active{ background: var(--navy-900); color:#fff; }
+
+.auth-card h2{ font-size:24px; margin-bottom:6px; }
+.auth-card .sub{ color: var(--muted); font-size:14px; margin-bottom:28px; }
+
+/* A gently-lifted "3D" panel around the sign-in form itself — a soft
+   multi-layer shadow stack for depth, a subtle top highlight line to
+   catch light, and a small lift-and-tilt on hover so it reads as a
+   tangible card rather than a flat form sitting on the page. */
+.auth-card-panel{
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 38px 34px;
+  border: 1px solid var(--line-soft);
+  box-shadow:
+    0 1px 2px rgba(20,30,60,.05),
+    0 10px 20px -8px rgba(20,30,60,.10),
+    0 30px 60px -24px rgba(20,30,60,.20);
+  position: relative;
+  transform: perspective(1200px) rotateX(0deg) translateZ(0);
+  transition: transform .35s cubic-bezier(.2,.8,.3,1), box-shadow .35s ease;
+}
+.auth-card-panel::before{
+  content:''; position:absolute; inset:0; border-radius:22px; padding:1px;
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0) 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events:none;
+}
+.auth-card-panel:hover{
+  transform: perspective(1200px) rotateX(1.5deg) translateY(-3px) translateZ(0);
+  box-shadow:
+    0 2px 4px rgba(20,30,60,.06),
+    0 18px 32px -10px rgba(20,30,60,.14),
+    0 45px 90px -30px rgba(20,30,60,.26);
+}
+@media (prefers-reduced-motion: reduce){ .auth-card-panel, .auth-card-panel:hover{ transform:none; } }
+
+/* Circular icon badge above the heading — a person for the staff sign-in,
+   a key/shield for HR — giving each screen a distinct, tangible identity
+   at a glance instead of two forms that only differ by copy. */
+.auth-icon-badge{
+  width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(145deg, var(--navy-800), var(--navy-900));
+  box-shadow: 0 8px 16px -6px rgba(20,30,80,.35), inset 0 1px 0 rgba(255,255,255,.15);
+  margin-bottom:18px;
+}
+.auth-icon-badge.gold{ background: linear-gradient(145deg, #C79A4B, var(--brass)); box-shadow: 0 8px 16px -6px rgba(150,110,30,.35), inset 0 1px 0 rgba(255,255,255,.25); }
+.auth-icon-badge svg{ width:26px; height:26px; stroke:#fff; }
+
+/* Icons embedded inside the email/password inputs themselves — an
+   envelope and a lock — plus a show/hide toggle on the password field so
+   people can double-check what they typed without guessing. Placed after
+   .field input below so its padding overrides survive the cascade. */
+.field-icon{ position:relative; }
+
+.field{ margin-bottom:18px; min-width:0; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color: var(--ink-soft); margin-bottom:7px; letter-spacing:.01em; }
+.field input, .field select{
+  width:100%; padding:12.5px 14px; border-radius: var(--radius-sm);
+  border:1.5px solid var(--line); background: var(--surface);
+  font-size:14.5px; color: var(--ink); font-family:inherit; cursor:auto;
+  transition: border-color .15s, box-shadow .15s; box-sizing:border-box;
+}
+.field select{ cursor:pointer; }
+.field input:focus, .field select:focus{ outline:none; border-color: var(--navy-600); box-shadow: 0 0 0 4px rgba(46,74,147,.1); }
+
+.field-icon > svg{
+  position:absolute; left:15px; top:50%; transform:translateY(-50%);
+  width:17px; height:17px; stroke: var(--muted-2); pointer-events:none; z-index:1;
+}
+.field-icon input{ padding-left:46px !important; }
+.field-icon .pw-toggle{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border:none; background:transparent; cursor:pointer; border-radius:8px; color: var(--muted-2);
+  transition: background .15s, color .15s;
+}
+.field-icon .pw-toggle:hover{ background: var(--surface-soft); color: var(--ink); }
+.field-icon .pw-toggle svg{ width:17px; height:17px; }
+.field-icon input[type="password"], .field-icon input[type="text"].pw-field{ padding-right:42px !important; }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:none; border-radius: var(--radius-sm); cursor:pointer;
+  font-weight:700; font-size:14px; padding:12.5px 20px;
+  transition: transform .12s ease, box-shadow .15s ease, background .15s ease, opacity .15s;
+}
+.btn:active{ transform: translateY(1px); }
+.btn-primary{ background: var(--navy-900); color:#fff; }
+.btn-primary:hover{ background: var(--navy-700); }
+.btn-block{ width:100%; }
+.btn-gold{ background: linear-gradient(135deg, var(--brass-light), var(--brass)); color:#fff; }
+.btn-gold:hover{ background: var(--brass); }
+.btn-ghost{ background: transparent; color: var(--navy-700); border:1.5px solid var(--line); }
+.btn-ghost:hover{ background: var(--surface-soft); }
+.btn-danger-ghost{ background: var(--danger-tint); color: var(--danger); }
+.btn-danger-ghost:hover{ background:#F5D9D5; }
+.btn-sm{ padding:8px 14px; font-size:12.5px; border-radius:8px; }
+.btn:disabled{ opacity:.55; cursor:not-allowed; }
+.btn-spinner{
+  display:inline-block; width:12px; height:12px; margin-right:7px; vertical-align:-1.5px;
+  border:2px solid currentColor; border-right-color:transparent; border-radius:50%;
+  animation: btn-spin .6s linear infinite; opacity:.85;
+}
+@keyframes btn-spin{ to{ transform:rotate(360deg); } }
+/* Icon-only refresh button — sits next to "Apply filters" everywhere a
+   filter bar exists, and standalone on views without filters, so there's
+   always a clear, consistent way to pull the latest data on demand. */
+.btn-icon{ padding:8px 10px; display:inline-flex; align-items:center; justify-content:center; line-height:1; flex-shrink:0; }
+.btn-icon svg{ width:15px; height:15px; }
+.btn-icon.spinning svg{ animation: btn-spin 0.7s linear infinite; }
+
+.auth-error{
+  background: var(--danger-tint); color:#9A372D; border:1px solid #F2C7C0;
+  padding:11px 14px; border-radius:10px; font-size:13px; margin-bottom:18px; display:none;
+}
+.auth-error.show{ display:block; }
+
+.auth-foot{ margin-top:24px; font-size:12.5px; color: var(--muted-2); text-align:center; }
+.demo-box{
+  margin-top:26px; padding:14px 16px; border-radius:12px; background: var(--surface);
+  border:1px dashed var(--line); font-size:12px; color: var(--muted); line-height:1.7;
+}
+.demo-box b{ color: var(--ink-soft); }
+
+/* ============================================================
+   APP SHELL (Dashboards)
+   ============================================================ */
+.app-shell{ display:grid; grid-template-columns: 260px minmax(0, 1fr); min-height:100vh; }
+@media (max-width: 980px){
+  .app-shell{ grid-template-columns: minmax(0, 1fr); }
+  .sidebar{ position:fixed; z-index:50; left:0; top:0; bottom:0; transform: translateX(-100%); transition: transform .25s ease; }
+  .sidebar.open{ transform: translateX(0); }
+  .sidebar-scrim{ position:fixed; inset:0; background:rgba(12,22,51,.5); z-index:49; display:none; }
+  .sidebar-scrim.show{ display:block; }
+}
+
+.sidebar{
+  background: linear-gradient(190deg, var(--navy-900), var(--navy-800) 70%);
+  color:#fff; padding: 26px 18px; display:flex; flex-direction:column; gap:6px;
+}
+.sidebar-brand{ display:flex; align-items:center; gap:12px; padding: 6px 8px 26px; }
+.sidebar-brand .seal{ width:42px; height:42px; border-radius:11px; padding:6px; }
+.sidebar-brand .brand-name{ font-size:15px; }
+.sidebar-brand .brand-sub{ font-size:9.5px; }
+
+.nav-section-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.13em; color: rgba(255,255,255,.35); padding:14px 12px 8px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:10px;
+  color: rgba(255,255,255,.68); font-size:13.8px; font-weight:500; cursor:pointer;
+  transition: background .15s, color .15s;
+}
+.nav-item svg{ width:18px; height:18px; opacity:.85; flex-shrink:0; }
+.nav-item:hover{ background: rgba(255,255,255,.06); color:#fff; }
+.nav-item.active{ background: rgba(140,198,63,.16); color: var(--brass-light); }
+.nav-item.active svg{ opacity:1; }
+.nav-badge{
+  margin-left:auto; background: var(--brass); color:#fff; font-size:10.5px; font-weight:700;
+  padding:1.5px 7px; border-radius:999px;
+}
+
+.sidebar-footer{
+  margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,.09);
+  display:flex; align-items:center; gap:11px;
+}
+.avatar{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family: var(--display); font-weight:700; font-size:14px; color:#fff; flex-shrink:0;
+}
+.sidebar-footer .who{ flex:1; min-width:0; }
+.sidebar-footer .who .name{ font-size:13px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sidebar-footer .who .role{ font-size:11px; color: rgba(255,255,255,.45); }
+.icon-btn{
+  width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04); color: rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition: background .15s, color .15s; flex-shrink:0;
+}
+.icon-btn:hover{ background: rgba(255,255,255,.1); color:#fff; }
+
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  padding: 20px 32px; background: var(--surface); border-bottom:1px solid var(--line-soft);
+  position:sticky; top:0; z-index:20;
+}
+.topbar h1{ font-size:21px; }
+.topbar .meta{ font-size:12.5px; color: var(--muted); margin-top:3px; }
+.topbar-actions{ flex-wrap:wrap; }
+.menu-btn{ display:none; }
+@media (max-width:980px){ .menu-btn{ display:flex; } }
+
+.content{ padding: 28px 32px 60px; flex:1; }
+
+.app-footer{
+  padding: 16px 32px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.app-footer .powered-by{ opacity: 0.85; }
+.status-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--surface-soft); color: var(--muted); border: 1px solid var(--line);
+}
+.status-pill .dot{ width:7px; height:7px; border-radius:50%; background: var(--muted); flex-shrink:0; }
+.status-pill.ok{ background: var(--success-tint); color: var(--success); border-color: transparent; }
+.status-pill.ok .dot{ background: var(--success); }
+.status-pill.warn{ background: var(--late-tint); color: var(--late); border-color: transparent; }
+.status-pill.warn .dot{ background: var(--late); }
+.status-pill.err{ background: var(--danger-tint); color: var(--danger); border-color: transparent; }
+.status-pill.err .dot{ background: var(--danger); }
+@media (max-width:640px){
+  .content{ padding: 20px 16px 50px; } .topbar{ padding:14px 16px; }
+  /* .search-input has a 220px min-width for desktop filter bars; on a
+     narrow phone that alone can be wider than the available card width
+     once padding is subtracted, pushing the card into horizontal scroll.
+     Once the parent row has already wrapped it onto its own line (every
+     filter/search row in this app uses flex-wrap:wrap), letting it fill
+     that line is both safer and reads better than a half-width box. */
+  .search-input{ min-width:0; width:100%; }
+
+  /* Everything in the topbar's right-hand cluster (status pill, primary
+     button) should read at the same visual weight on a phone — same
+     height, same font-size — instead of the pill looking dainty next to
+     a full-size button. Both go full-width and stack cleanly once the
+     topbar wraps, rather than fighting for space on one line. */
+  .topbar-actions{ width:100%; justify-content:stretch; gap:10px; }
+  .topbar-actions .status-pill{ flex:1 1 auto; justify-content:center; order:2; }
+  .topbar-actions .btn{ flex:1 1 auto; order:1; }
+  .status-pill{ font-size:12.5px; padding:9px 12px; }
+  .status-pill #device-status-pill-text{
+    max-width: 200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block; vertical-align:middle;
+  }
+  .topbar h1{ font-size:18px; }
+  .topbar .meta{ font-size:11.5px; }
+
+  /* Cards feel cramped at the desktop 24px pad once the viewport itself
+     is only ~360-400px wide — dial it back so content has room to
+     breathe without the card looking like it's fighting its own edges. */
+  .card-pad{ padding:18px; }
+  .section-head{ margin-bottom:14px; }
+  .section-head h3{ font-size:15px; }
+
+  /* Buttons, badges and the sort-header labels should all sit on one
+     consistent type scale on mobile rather than each control keeping
+     its desktop size — small buttons in particular looked oversized
+     next to badges/pills at this width otherwise. */
+  .btn-sm{ font-size:12.5px; padding:9px 14px; }
+  .badge{ font-size:11px; padding:4px 9px; }
+  th.sortable{ font-size:10px; }
+
+  .app-footer{ padding:14px 16px 20px; font-size:11.5px; flex-direction:column; align-items:flex-start; gap:6px; }
+}
+
+/* ---------------- Cards / grids ---------------- */
+.card{ background: var(--surface); border:1px solid var(--line-soft); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.card-pad{ padding:24px; }
+.grid{ display:grid; gap:20px; }
+.grid-stats{ grid-template-columns: repeat(5, 1fr); }
+.grid-2{ grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.grid-3{ grid-template-columns: repeat(3,1fr); }
+@media (max-width:1180px){
+  .grid-stats{ grid-template-columns: repeat(3,1fr);}
+  .grid-2{ grid-template-columns:1fr; }
+  .grid-3{ grid-template-columns:repeat(2,1fr);}
+  /* .dial-card's min-width (below) is meant for the desktop 2-column
+     layout, where the grid track can be wider than the card's content —
+     but CSS Grid items don't shrink below their own min-width by default,
+     so once this stacks to a single column on a narrow phone, that same
+     min-width can force the card wider than the viewport. overflow-x is
+     hidden on <body> (to stop the whole page scrolling sideways from
+     unrelated wide content elsewhere), so that overflow doesn't show as
+     a horizontal scrollbar — it just silently clips, which is what
+     actually looked like the dial "cutting off". Dropping min-width and
+     letting the grid item shrink here fixes that.
+     order:2 makes it explicit (belt-and-suspenders alongside the HTML's
+     own element order) that the dial always renders below the stat
+     cards + last-10-days table at this breakpoint, never beside or
+     above them. */
+  .grid-2 > *{ min-width:0; }
+  .dial-card{ min-width:0; order:2; }
+}
+@media (max-width:480px){
+  /* Narrow phones specifically (independent of the max-height query
+     below, which only kicks in on short viewports — a tall-but-narrow
+     phone needs this on its own): shrink the dial circle so it can
+     never be the widest thing in the card and force overflow. */
+  .dial{ width:150px; height:150px; }
+  .dial-inner{ width:120px; height:120px; }
+  .dial-inner .time{ font-size:21px; }
+  .dial-card{ padding:20px; }
+}
+@media (max-width:560px){ .grid-stats{ grid-template-columns: 1fr; } .grid-3{ grid-template-columns:1fr; } }
+
+.stat-card{ padding:22px; position:relative; overflow:hidden; }
+.stat-card .ic{ width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+.stat-card .num{ font-family: var(--display); font-size:30px; font-weight:700; color: var(--navy-900); line-height:1; }
+.stat-card .lbl{ font-size:12.5px; color: var(--muted); margin-top:7px; }
+.stat-card .delta{ font-size:11.5px; font-weight:600; margin-top:10px; display:inline-flex; align-items:center; gap:4px; }
+
+/* A 14" laptop at 100% browser zoom typically has ~760-820px of usable
+   height after the OS taskbar and browser chrome — noticeably less than
+   the ~900px+ this layout was comfortable in. Rather than relying on the
+   page to scroll (easy to miss, reads as "cut off"), compact the tallest
+   elements — the check-in dial card and the stat cards — so the whole
+   dashboard fits without scrolling or the person needing to zoom out. */
+@media (max-height:820px){
+  .content{ padding-top:18px; padding-bottom:24px; }
+  .grid{ gap:14px; }
+  .stat-card{ padding:15px; }
+  .stat-card .ic{ width:32px; height:32px; margin-bottom:10px; }
+  .stat-card .num{ font-size:23px; }
+  .stat-card .lbl{ margin-top:4px; }
+  .dial-card{ padding:20px; }
+  .dial-wrap{ gap:10px; padding:10px 0 2px; }
+  .dial{ width:150px; height:150px; }
+  .dial-inner{ width:120px; height:120px; }
+  .dial-inner .time{ font-size:21px; }
+  .card-pad{ padding:18px; }
+}
+
+.section-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+.section-head h3{ font-size:16.5px; }
+.section-head .sub{ font-size:12.5px; color: var(--muted); margin-top:3px; }
+
+/* ---------------- Collapsible cards ---------------- */
+/* Any card can opt in with class="collapsible" + data-card-id="unique-id"
+   (see admin.js's initCollapsibleCards) — wraps everything below its
+   section-head so it can be hidden, and remembers open/closed per card in
+   localStorage so it stays out of the way across reloads too. Built once,
+   reusable anywhere a card gets in the way of scanning a busy screen. */
+.card.collapsible > .section-head{ cursor:pointer; user-select:none; margin-bottom:0; padding-bottom:18px; }
+.card.collapsible > .card-body{ margin-top:18px; }
+.card.collapsible.collapsed > .section-head{ padding-bottom:0; }
+.card.collapsible.collapsed > .card-body{ display:none; }
+.card-collapse-toggle{
+  display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; flex-shrink:0;
+  border-radius:8px; color: var(--muted); transition: transform .15s ease, background .15s ease;
+}
+.card.collapsible:not(.collapsed) .card-collapse-toggle{ transform: rotate(180deg); }
+.card.collapsible > .section-head:hover .card-collapse-toggle{ background: var(--surface-soft); color: var(--navy-700); }
+
+th.sortable{ cursor:pointer; user-select:none; white-space:nowrap; }
+th.sortable:hover{ color: var(--ink); }
+th.sortable .sort-ind{ font-size:9px; margin-left:4px; opacity:.7; }
+
+/* ---------------- Badges ---------------- */
+.badge{ display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.badge::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.badge-present{ background: var(--success-tint); color: var(--success); }
+.badge-late{ background: var(--late-tint); color: var(--late); }
+.badge-absent{ background: var(--danger-tint); color: var(--danger); }
+.badge-pending{ background: var(--info-tint); color: var(--info); }
+.badge-approved{ background: var(--success-tint); color: var(--success); }
+.badge-rejected{ background: var(--danger-tint); color: var(--danger); }
+.badge-onleave{ background:#EEE7F8; color:#6B4FA0; }
+.badge-office{ background: var(--info-tint); color: var(--info); }
+.badge-remote{ background: var(--brass-tint); color: var(--brass); }
+.badge-neutral{ background: var(--surface-soft); color: var(--muted); }
+.badge-biometric{ background: var(--success-tint); color: var(--success); }
+
+/* ---------------- Tables ---------------- */
+.table-wrap{ overflow-x:auto; }
+table{ width:100%; border-collapse: collapse; font-size:13.5px; }
+thead th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color: var(--muted-2);
+  padding:0 16px 14px; font-weight:700; white-space:nowrap;
+}
+tbody tr{ border-top:1px solid var(--line-soft); }
+tbody td{ padding:15px 16px; vertical-align:middle; white-space:nowrap; }
+tbody tr:hover{ background: var(--surface-soft); }
+.row-person{ display:flex; align-items:center; gap:11px; }
+.row-person .avatar{ width:32px; height:32px; font-size:11.5px; }
+.row-person .nm{ font-weight:600; font-size:13.5px; color: var(--ink); }
+.row-person .sub{ font-size:11.5px; color: var(--muted); }
+
+/* ---------------- Pagination ---------------- */
+/* Sits directly under a table (inside the same card) — keeps long tables
+   (attendance log, biometric raw log, staff directory) from turning into
+   one giant scroll by only rendering one page of rows into the DOM at a
+   time. Same button classes as everywhere else in the app (btn-ghost /
+   btn-gold) so it never looks like a bolted-on, different-styled widget. */
+.pagination{
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  padding:16px 16px 4px; border-top:1px solid var(--line-soft); margin-top:4px;
+}
+.pagination-summary{ font-size:12.5px; color: var(--muted); white-space:nowrap; }
+.pagination-controls{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.pagination-controls .btn{ min-width:34px; padding:7px 12px; }
+.pagination-controls .btn:disabled{ opacity:.4; cursor:not-allowed; }
+.pagination-ellipsis{ color: var(--muted-2); padding:0 4px; font-size:13px; user-select:none; }
+@media (max-width:640px){
+  .pagination{ flex-direction:column; align-items:flex-start; }
+}
+
+/* ---------------- Buttons / chips for filters ---------------- */
+.chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.chip{
+  padding:8px 14px; border-radius:999px; font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1.5px solid var(--line); background: var(--surface); color: var(--ink-soft); transition: all .15s;
+}
+.chip.active{ background: var(--navy-900); border-color: var(--navy-900); color:#fff; }
+.select, select{
+  border:1.5px solid var(--line); border-radius:9px; padding:9px 12px; font-size:13px; background: var(--surface);
+  color: var(--ink-soft); font-family:inherit; cursor:pointer;
+}
+.search-input{
+  border:1.5px solid var(--line); border-radius:9px; padding:9px 14px 9px 38px; font-size:13px;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23666F8C' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 13px center;
+  min-width:220px;
+}
+
+/* ---------------- Shift pill ---------------- */
+.shift-pill{
+  display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px;
+  font-size:11.5px; font-weight:600; background: var(--info-tint); color: var(--info); white-space:nowrap;
+}
+
+/* ---------------- IP / location meta (admin views) ---------------- */
+.meta-stack{ display:flex; flex-direction:column; gap:2px; }
+.meta-stack .ip{ font-family: var(--mono); font-size:11.5px; color: var(--ink-soft); }
+.meta-stack .loc{ font-size:11px; color: var(--muted); }
+.meta-stack .loc a{ color: var(--info); text-decoration:underline; text-underline-offset:2px; }
+
+/* ============================================================
+   SIGNATURE ELEMENT — Attendance Dial
+   ============================================================ */
+.dial-card{
+  background: radial-gradient(420px 240px at 20% -10%, rgba(140,198,63,.18), transparent 60%), linear-gradient(175deg, var(--navy-900), var(--navy-800));
+  border-radius: var(--radius-lg); padding:30px; color:#fff; position:relative; overflow:hidden;
+  min-width: 270px;
+}
+.dial-card::after{
+  content:""; position:absolute; inset:0;
+  background-image: repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0px, rgba(255,255,255,.02) 1px, transparent 1px, transparent 56px);
+}
+.dial-top{ display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1; }
+.dial-clock{ font-family: var(--mono); font-size:13px; color: rgba(255,255,255,.55); }
+.dial-date{ font-size:12.5px; color: rgba(255,255,255,.4); margin-top:2px; }
+
+.dial-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; padding: 18px 0 6px; position:relative; z-index:1; }
+.dial{
+  width:188px; height:188px; border-radius:50%;
+  border: 1.5px solid rgba(140,198,63,.4);
+  display:flex; align-items:center; justify-content:center; position:relative;
+}
+.dial::before{
+  content:""; position:absolute; inset:10px; border-radius:50%; border:1px dashed rgba(140,198,63,.25);
+}
+.dial-inner{
+  width:150px; height:150px; border-radius:50%; background: rgba(255,255,255,.03);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.dial-inner .time{ font-family: var(--mono); font-size:26px; font-weight:600; letter-spacing:.02em; }
+.dial-inner .status-lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color: var(--brass-light); }
+.dial-actions{ display:flex; gap:12px; width:100%; max-width:280px; position:relative; z-index:1; }
+.dial-actions .btn{ flex:1; }
+.dial-foot{ font-size:12px; color: rgba(255,255,255,.45); text-align:center; position:relative; z-index:1; }
+.dial-geo{ font-size:10.5px; color: rgba(255,255,255,.35); text-align:center; position:relative; z-index:1; display:flex; align-items:center; gap:5px; justify-content:center; }
+.dial-geo svg{ width:11px; height:11px; opacity:.7; }
+
+/* ---------------- Progress ring (used in report cards) ---------------- */
+.ring-wrap{ position:relative; width:104px; height:104px; flex-shrink:0; }
+.ring-wrap svg{ transform: rotate(-90deg); }
+.ring-label{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ring-label .pct{ font-family: var(--display); font-weight:700; font-size:20px; color: var(--navy-900); }
+.ring-label .tag{ font-size:9.5px; color: var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+
+/* ---------------- Modal ---------------- */
+.modal-backdrop{
+  position:fixed; inset:0; background: rgba(12,22,51,.55); backdrop-filter: blur(2px);
+  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+.modal{
+  background: var(--surface); border-radius: var(--radius-lg); width:100%; max-width:440px;
+  padding:28px; box-shadow: var(--shadow-lg); animation: modalIn .18s ease;
+  max-height: calc(100vh - 40px); overflow-y: auto;
+}
+.modal-wide{ max-width: 620px; }
+@keyframes modalIn{ from{ opacity:0; transform: translateY(10px) scale(.98);} to{ opacity:1; transform:none; } }
+.modal h3{ font-size:19px; margin-bottom:6px; }
+.modal .sub{ font-size:13px; color: var(--muted); margin-bottom:20px; }
+textarea{
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; font-size:14px;
+  font-family:inherit; resize:vertical; min-height:90px; color:var(--ink);
+}
+textarea:focus{ outline:none; border-color: var(--navy-600); box-shadow: 0 0 0 4px rgba(46,74,147,.08); }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+.modal-actions .btn{ flex:1; }
+.field-row{ display:flex; gap:12px; flex-wrap:wrap; }
+.field-row .field{ flex:1 1 130px; }
+@media (max-width:480px){ .field-row .field{ flex-basis:100%; } }
+
+/* ---------------- Toast ---------------- */
+#toast-host{ position:fixed; bottom:24px; right:24px; z-index:200; display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+.toast{
+  background: var(--navy-900); color:#fff; padding:13px 18px; border-radius:11px; font-size:13.5px;
+  box-shadow: var(--shadow-lg); display:flex; align-items:center; gap:10px; animation: toastIn .2s ease; max-width:320px;
+}
+.toast.success{ background: #1F4A35; }
+.toast.error{ background: #5A2620; }
+@keyframes toastIn{ from{ opacity:0; transform: translateY(10px);} to{ opacity:1; transform:none;} }
+
+/* ---------------- Misc utility ---------------- */
+.flex{ display:flex; }
+.between{ justify-content:space-between; }
+.center{ align-items:center; }
+.gap-8{ gap:8px; } .gap-10{ gap:10px; } .gap-12{ gap:12px; } .gap-14{ gap:14px; } .gap-16{ gap:16px; }
+
+/* A simple on/off toggle switch — used for the automatic-sync setting.
+   The real checkbox is visually hidden but still keyboard/screen-reader
+   accessible; the track+thumb are purely decorative and driven by :checked. */
+.toggle-switch{ position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0; }
+.toggle-switch input{ position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; z-index:1; }
+.toggle-track{ position:absolute; inset:0; background: var(--line); border-radius:999px; transition: background .2s ease; }
+.toggle-thumb{ position:absolute; top:3px; left:3px; width:18px; height:18px; background:#fff; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,.25); transition: transform .2s ease; }
+.toggle-switch input:checked ~ .toggle-track{ background: var(--brass); }
+.toggle-switch input:checked ~ .toggle-track .toggle-thumb{ transform: translateX(18px); }
+.toggle-switch input:focus-visible ~ .toggle-track{ box-shadow: 0 0 0 3px rgba(95,168,46,.3); }
+.muted{ color: var(--muted); }
+.empty-state{ text-align:center; padding:50px 20px; color: var(--muted); }
+.empty-state .ic{ width:46px; height:46px; margin:0 auto 14px; opacity:.4; }
+.skeleton{ background: linear-gradient(90deg, var(--line-soft) 25%, var(--canvas-2) 37%, var(--line-soft) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius:8px; }
+@keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
+
+.tab-row{ display:flex; gap:4px; background: var(--surface-soft); padding:4px; border-radius:11px; width:fit-content; margin-bottom:22px; }
+.tab-row .tab{ padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; color: var(--muted); cursor:pointer; }
+.tab-row .tab.active{ background: var(--surface); color: var(--navy-900); box-shadow: var(--shadow-sm); }
+
+.info-list{ display:flex; flex-direction:column; gap:0; }
+.info-row{ display:flex; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px; }
+.info-row:last-child{ border-bottom:none; }
+.info-row .k{ color: var(--muted); }
+.info-row .v{ font-weight:600; color: var(--ink); }
