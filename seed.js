@@ -14,7 +14,7 @@ const employees = [
     email: 'kutkitechutkrista@gmail.com', passwordHash: defaultPasswordHash,
     department: 'Management', designation: 'CoFounder & Full Stack Developer', phone: '9840795032',
     joinDate: '2025-12-01', status: 'active',
-    shiftName: 'Variable', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#1B2F63',
+    shiftName: 'Day Shift', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#1B2F63',
     managerId: null
   },
   {
@@ -22,7 +22,7 @@ const employees = [
     email: 'utpal.adhikari@gmail.com', passwordHash: defaultPasswordHash,
     department: 'Sales', designation: 'CSO', phone: '9810000102',
     joinDate: '2026-01-15', status: 'active',
-    shiftName: 'Variable', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#274E8C',
+    shiftName: 'Day Shift', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#274E8C',
     managerId: null
   },
   {
@@ -30,7 +30,7 @@ const employees = [
     email: 'pointertechnepal@gmail.com', passwordHash: defaultPasswordHash,
     department: 'Management', designation: 'CoFounder and ERP Software Engineer', phone: '9810000103',
     joinDate: '2025-12-01', status: 'active',
-    shiftName: 'Variable', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#2E6B9E',
+    shiftName: 'Day Shift', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#2E6B9E',
     managerId: null
   },
   {
@@ -39,14 +39,22 @@ const employees = [
     department: 'IT', designation: 'Software Engineering Intern', phone: '9810000104',
     joinDate: '2026-06-01', status: 'active',
     shiftName: 'Day Shift', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#3F8F6A',
-    managerId: 'emp_3'
+    managerId: 'emp_1'
   },
   {
     id: 'emp_5', employeeId: 'KT-1005', name: 'Raman K.C',
     email: 'kutkitech.administration@gmail.com', passwordHash: defaultPasswordHash,
-    department: 'Design', designation: 'UI/UX Designer', phone: '9810000105',
+    department: 'Management', designation: 'Administrator', phone: '9810000105',
     joinDate: '2023-08-20', status: 'active',
-    shiftName: 'Full Shift', shiftStart: '09:00', shiftEnd: '18:00', avatarColor: '#6DAF3C',
+    shiftName: 'Full Shift', shiftStart: '10:00', shiftEnd: '18:00', avatarColor: '#6DAF3C',
+    managerId: 'emp_1'
+  },
+  {
+    id: 'emp_6', employeeId: 'KT-1006', name: 'Anindra Raj Acharya',
+    email: 'anindra.acharya2025@gmail.com', passwordHash: defaultPasswordHash,
+    department: 'Management', designation: 'Chief Executive Manager', phone: '9810000105',
+    joinDate: '2023-08-20', status: 'active',
+    shiftName: 'Day Shift', shiftStart: '10:00', shiftEnd: '17:00', avatarColor: '#6DAF3C',
     managerId: 'emp_1'
   }
 ];
@@ -54,7 +62,7 @@ const employees = [
 const admins = [
   {
     id: 'admin_1',
-    name: 'Raman K.C',
+    name: 'Administrator',
     email: 'admin@kutkitech.com',
     passwordHash: bcrypt.hashSync('Admin@123', 8),
     role: 'HR Administrator',
